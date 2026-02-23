@@ -216,7 +216,9 @@ body {
   background: white;
   cursor: pointer;
 }
-
+.btn-danger{
+  border-color: #9c0924;
+}
 .results {
   margin: 10px 0 14px 0;
   display: flex;
@@ -246,4 +248,48 @@ body {
 .empty-text {
   margin: 0;
   opacity: 0.85;
+}
+/* ========= CARRITO ========= */
+.cardCartRow {
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  padding: 10px;
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.cardCartRow-title {
+  font-weight: bold;
+  margin-bottom: 4px;
+}
+
+.cardCartRow-meta {
+  opacity: 0.8;
+  font-size: 12px;
+}
+
+.cardCartRow-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.cartInput-qty {
+  width: 70px;
+  padding: 8px;
+  border-radius: 8px;
+  border: 1px solid #bbb;
+}
+
+.cart-summary {
+  margin-top: 12px;
+  border-top: 1px solid #ddd;
+  padding-top: 10px;
+}
+
+.cart-summary-info {
+  display: flex;
+  justify-content: space-between;
+  margin: 6px 0;
 }

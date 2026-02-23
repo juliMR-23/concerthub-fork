@@ -1,21 +1,15 @@
 import type { Concert } from "../../types";
-
-// Enum que mapea los estados del concierto a sus valores de texto.
-// Usar un enum hace el código más legible y evita errores al escribir los strings manualmente.
-enum ConcertStatusEnum {
-    available = "AVAILABLE",
-    sold_out = "SOLD_OUT"
-}
-
+import { ConcertStatusEnum } from "../../types";
 // Definimos el tipo de las props que recibe este componente.
 // Solo necesita un objeto de tipo Concert.
 type Props = {
     concert: Concert;
+    onAddToCart: (concert: Concert) => void;
 }
 
 // Componente que muestra la tarjeta individual de un concierto.
 // Recibe un objeto "concert" por destructuración de props.
-export default function ConcertCard({ concert }: Props) {
+export default function ConcertCard({ concert, onAddToCart }: Props) {
     // Variable booleana que indica si el concierto está agotado
     const isSold: boolean = concert.status === ConcertStatusEnum.sold_out;
 
@@ -47,8 +41,11 @@ export default function ConcertCard({ concert }: Props) {
             <p className="concert-card-price">
                 ${concert.price}
             </p>
-            <button className="concert-card-btn" type="button" disabled={isSold}>
-                View Details
+            <button
+                className="concert-card-btn"
+                type="button" disabled={isSold}
+                onClick={() => onAddToCart(concert)}>
+                {isSold ? "Not available" : "Add to cart"}
             </button>
         </article>
     );

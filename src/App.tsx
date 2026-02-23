@@ -2,15 +2,20 @@
 // - useState: para manejar el estado local del componente
 // - useMemo: para memorizar valores calculados y evitar recalcularlos en cada render
 // - useEffect: para ejecutar efectos secundarios (como llamadas a APIs, suscripciones, etc.)
-import { useState, useMemo, useEffect } from 'react'
+import { useState, useMemo } from 'react'
 import "./styles/global.css"
 import './App.css'
 import Navbar from './components/layout/Navbar'
 import ConcertList from './components/concerts/ConcertList'
 import { concerts } from './data/concert'
 import FilterBar from './components/concerts/FilterBar'
+import type { CartItem, Concert } from './types'
+import CartPanel from './components/cart/CartPanel'
+import { ConcertStatusEnum } from './types'
 
 function App() {
+
+  /* =============================== CLASE FILTROS =============================== */
   // Estado para el texto de búsqueda que escribe el usuario
   const [searchTerm, setSearchTerm] = useState<string>("");
   // Estado para el género musical seleccionado en el filtro ("ALL" = todos los géneros)
@@ -33,9 +38,6 @@ function App() {
 
   // useEffect se ejecuta después del primer render.
   // Aquí se podría usar para cargar datos de una API, por ejemplo.
-  useEffect(() => {
-
-  }, [])
 
   // useMemo filtra los conciertos cada vez que cambia alguno de los filtros.
   // Se recalcula automáticamente cuando cambian las dependencias del arreglo [searchTerm, selectedCity, ...].
@@ -71,6 +73,38 @@ function App() {
     setSelectedGenre("ALL");
     setOnlyAvailable(false);
   }
+  /* =============================== CLASE CARRITO =============================== */
+
+  const [cart, setCart] = useState<CartItem[]>([]);
+
+  function addToCart(concert: Concert) {
+    if (concert.status === ConcertStatusEnum.sold_out) return;
+
+    setCart((prev) => {
+      const existing = prev.find((i) => i.concert.id === concert.id);
+      if (existing) {
+        return prev.map((i) => i.concert.id === concert.id ? { ...i, qty: i.qty + 1 } : i);
+      }
+      return [...prev, { concert, qty: 1 }]
+    });
+  }
+  function removeFromCart(concertId: number) {
+    setCart((prev) => prev.filter((i) => i.concert.id !== concertId));
+  }
+
+  function updateQty(concertId: number, qty: number) {
+    if (!Number.isFinite(qty)) return;
+    console.log('the qty is:', qty);
+    setCart((prev) => prev.map((i) => (i.concert.id === concertId ? 
+      // Habia cometido un error aqui, estaba usando i.qty en lugar de qty
+      // esto hacia que no se actualizara el qty correctamente
+      // ahora se actualiza el qty correctamente
+      { ...i, qty: qty } : i))
+    )
+  }
+  function clearCart() {
+    setCart([]);
+  }
 
   return (
     <div className='app'>
@@ -102,8 +136,11 @@ function App() {
             <h2> There is no results</h2>
             <p> Try changing the filters or resetting them</p>
           </section> :
-          <ConcertList concerts={filteredConcerts} />
+          <ConcertList concerts={filteredConcerts} onAddToCart={addToCart} />
         }
+        <section>
+          <CartPanel items={cart} onRemove={removeFromCart} onQtyChange={updateQty} onClear={clearCart}></CartPanel>
+        </section>
       </main>
     </div>
   )
