@@ -81,6 +81,11 @@ function App() {
     if (concert.status === ConcertStatusEnum.sold_out) return;
 
     setCart((prev) => {
+      // .find() es un metodo que se usa para buscar un elemento en un array
+      // y devuelve el primer elemento que cumple la condicion
+      // en este caso, se busca el elemento que tiene el mismo id que el concierto que se pasa por parametro
+      // si se encuentra, se actualiza el qty
+      // si no, se agrega el concierto al carrito
       const existing = prev.find((i) => i.concert.id === concert.id);
       if (existing) {
         return prev.map((i) => i.concert.id === concert.id ? { ...i, qty: i.qty + 1 } : i);
@@ -89,13 +94,21 @@ function App() {
     });
   }
   function removeFromCart(concertId: number) {
+    // .filter() es un metodo que se usa para filtrar un array
+    // y devuelve un nuevo array con los elementos que cumplen la condicion
+    // en este caso, se filtra el array para que no incluya el elemento que tiene el mismo id que el concierto que se pasa por parametro
+    // esto hace que se elimine el concierto del carrito
     setCart((prev) => prev.filter((i) => i.concert.id !== concertId));
   }
 
   function updateQty(concertId: number, qty: number) {
+    // .isFinite() es un metodo que se usa para verificar si un numero es finito
+    // y devuelve true si es finito, false si no es finito
+    // en este caso, se verifica si el qty es un numero finito
+    // si no es un numero finito, se retorna
     if (!Number.isFinite(qty)) return;
     console.log('the qty is:', qty);
-    setCart((prev) => prev.map((i) => (i.concert.id === concertId ? 
+    setCart((prev) => prev.map((i) => (i.concert.id === concertId ?
       // Habia cometido un error aqui, estaba usando i.qty en lugar de qty
       // esto hacia que no se actualizara el qty correctamente
       // ahora se actualiza el qty correctamente
@@ -110,7 +123,7 @@ function App() {
     <div className='app'>
 
       {/* Barra de navegación superior */}
-      <Navbar></Navbar>
+      <Navbar />
 
       {/* Barra de filtros: recibe los estados y las funciones para actualizarlos (props) */}
       <FilterBar
