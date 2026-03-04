@@ -1,29 +1,49 @@
 import { useState, useMemo, useEffect } from 'react'
 import ConcertList from '../components/concerts/ConcertList'
-import { concerts } from '../data/concert'
+// import { concerts } from '../data/concert'
 import FilterBar from '../components/concerts/FilterBar'
 import type { CartItem, Concert } from '../types'
 import CartPanel from '../components/cart/CartPanel'
 import StateMessage from '../components/ui/StateMessage'
 import Button from '../components/ui/Button'
 import { FiAlertOctagon } from 'react-icons/fi'
+import { getConcerts } from '../services/concertService'
 
 type Props = {
   cart: CartItem[];
   onAddToCart: (concert: Concert) => void;
   onRemove: (concertId: number) => void;
-  onQtyChange: (concertId: number, qty:number) => void;
+  onQtyChange: (concertId: number, qty: number) => void;
   onClearCart: () => void;
 }
-export default function HomePage({cart,onAddToCart,onRemove,onQtyChange,onClearCart}:Props) {
+export default function HomePage({ cart, onAddToCart, onRemove, onQtyChange, onClearCart }: Props) {
   /* =============================== Estados UX simulados =============================== */
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>("");
   const [forceError, setForceError] = useState(false);
 
   useEffect(() => {
     const t = setTimeout(() => setLoading(false), 700);
     return () => clearTimeout(t);
   }, []);
+  //  ---------------- CLASE SERVICIOS -----------------
+  const [concerts, setConcerts] = useState<Concert[]>([]);
+  async function loadConcerts() {
+    try {
+      setLoading(true);
+      setError(null);
+      const data = await getConcerts();
+      setConcerts(data);
+    } catch (e) {
+      const message = e instanceof Error ? e.message : "Unknown error";
+      setError(message);
+    }
+  }
+
+  useEffect(() => {
+    void loadConcerts();
+  }, [])
+
   /* =============================== CLASE FILTROS =============================== */
   // Estado para el texto de búsqueda que escribe el usuario
   const [searchTerm, setSearchTerm] = useState<string>("");
@@ -79,71 +99,72 @@ export default function HomePage({cart,onAddToCart,onRemove,onQtyChange,onClearC
     setSelectedGenre("ALL");
     setOnlyAvailable(false);
   }
-  
+
   // ====== Vista principal con estados ======
   const showError = forceError;
   const showEmpty = !loading && !showError && filteredConcerts.length === 0;
+
   return (
-      <main className='mx-auto max-w-6xl px-6 py-6'>
-        <div className="flex flex-col gap-2">
-          <h1 className="m-0 text-2xl font-semibold">Upcoming Concerts...</h1>
+    <main className='mx-auto max-w-6xl px-6 py-6'>
+      <div className="flex flex-col gap-2">
+        <h1 className="m-0 text-2xl font-semibold">Upcoming Concerts...</h1>
 
-          {/* Solo para demo docente (puedes quitarlo luego) */}
-          <div className="mt-2 flex items-center gap-2">
-            <Button variant="secondary" onClick={() => setForceError((v) => !v)}>
-              <FiAlertOctagon />
-              Toggle error (demo)
-            </Button>
-          </div>
+        {/* Solo para demo docente (puedes quitarlo luego) */}
+        <div className="mt-2 flex items-center gap-2">
+          <Button variant="secondary" onClick={() => setForceError((v) => !v)}>
+            <FiAlertOctagon />
+            Toggle error (demo)
+          </Button>
         </div>
+      </div>
 
-        {/* Barra de filtros: recibe los estados y las funciones para actualizarlos (props) */}
-        <FilterBar
-          searchTerm={searchTerm}
-          onSearchTerm={setSearchTerm}
-          genres={genres}
-          selectedGenre={selectedGenre}
-          onSelectedGenre={setSelectedGenre}
-          cities={cities}
-          selectedCity={selectedCity}
-          onSelectedCity={setSelectedCity}
-          onlyAvailable={onlyAvailable}
-          onSetOnlyAvailable={setOnlyAvailable}
-          onReset={handleReset}
-        />
-        <div className="mt-3 flex justify-end">
-          <span className="rounded-full border border-border bg-surface px-3 py-1 text-xs text-muted shadow-card">
-            Results: {filteredConcerts.length}
-          </span>
-        </div>
+      {/* Barra de filtros: recibe los estados y las funciones para actualizarlos (props) */}
+      <FilterBar
+        searchTerm={searchTerm}
+        onSearchTerm={setSearchTerm}
+        genres={genres}
+        selectedGenre={selectedGenre}
+        onSelectedGenre={setSelectedGenre}
+        cities={cities}
+        selectedCity={selectedCity}
+        onSelectedCity={setSelectedCity}
+        onlyAvailable={onlyAvailable}
+        onSetOnlyAvailable={setOnlyAvailable}
+        onReset={handleReset}
+      />
+      <div className="mt-3 flex justify-end">
+        <span className="rounded-full border border-border bg-surface px-3 py-1 text-xs text-muted shadow-card">
+          Results: {filteredConcerts.length}
+        </span>
+      </div>
 
-        <div className="mt-4 grid gap-4 lg:grid-cols-[2fr,1fr]">
-          <section>
-            {loading ? (
-              <StateMessage type="loading" title="Loading concerts..." description="Please wait a moment." />
-            ) : showError ? (
-              <StateMessage
-                type="error"
-                title="Something went wrong"
-                description="This is a simulated error for learning UI states."
-                actionText="Try again"
-                onAction={() => setForceError(false)}
-              />
-            ) : showEmpty ? (
-              <StateMessage
-                type="empty"
-                title="No results"
-                description="Try changing the filters or resetting them."
-                actionText="Reset filters"
-                onAction={handleReset}
-              />
-            ) : (
-              <ConcertList concerts={filteredConcerts} onAddToCart={onAddToCart} />
-            )}
-          </section>
+      <div className="mt-4 grid gap-4 lg:grid-cols-[2fr,1fr]">
+        <section>
+          {loading ? (
+            <StateMessage type="loading" title="Loading concerts..." description="Please wait a moment." />
+          ) : error ? (
+            <StateMessage
+              type="error"
+              title="Failed to load concerts"
+              description={error}
+              actionText="Try again"
+              onAction={() => loadConcerts()}
+            />
+          ) : showEmpty ? (
+            <StateMessage
+              type="empty"
+              title="No results"
+              description="Try changing the filters or resetting them."
+              actionText="Reset filters"
+              onAction={handleReset}
+            />
+          ) : (
+            <ConcertList concerts={filteredConcerts} onAddToCart={onAddToCart} />
+          )}
+        </section>
 
-          <CartPanel items={cart} onRemove={onRemove} onQtyChange={onQtyChange} onClear={onClearCart} />
-        </div>
-      </main>
+        <CartPanel items={cart} onRemove={onRemove} onQtyChange={onQtyChange} onClear={onClearCart} />
+      </div>
+    </main>
   );
 }
