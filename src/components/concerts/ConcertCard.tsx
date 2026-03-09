@@ -4,6 +4,7 @@ import { ConcertStatusEnum } from "../../types";
 import Badge from "../ui/Badge";
 import Button from "../ui/Button";
 import { FiShoppingCart } from "react-icons/fi";
+import { formatCOP } from "../../utils/format";
 // Definimos el tipo de las props que recibe este componente.
 // Solo necesita un objeto de tipo Concert.
 type Props = {
@@ -50,7 +51,7 @@ export default function ConcertCard({ concert, onAddToCart }: Props) {
         </Link>
       </div>
       <div className="mt-4 flex items-center justify-between">
-        <p className="m-0 font-semibold text-text">${concert.price}</p>
+        <p className="m-0 font-semibold text-text">{formatCOP(concert.price)}</p>
         <Button variant="primary" disabled={isSold} onClick={() => onAddToCart(concert)}>
           <FiShoppingCart />
           {isSold ? "Unavailable" : "Add"}

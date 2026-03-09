@@ -20,12 +20,7 @@ export default function HomePage({ cart, onAddToCart, onRemove, onQtyChange, onC
   /* =============================== Estados UX simulados =============================== */
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>("");
-  const [forceError, setForceError] = useState(false);
 
-  useEffect(() => {
-    const t = setTimeout(() => setLoading(false), 700);
-    return () => clearTimeout(t);
-  }, []);
   //  ---------------- CLASE SERVICIOS -----------------
   const [concerts, setConcerts] = useState<Concert[]>([]);
   async function loadConcerts() {
@@ -37,6 +32,8 @@ export default function HomePage({ cart, onAddToCart, onRemove, onQtyChange, onC
     } catch (e) {
       const message = e instanceof Error ? e.message : "Unknown error";
       setError(message);
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -58,12 +55,12 @@ export default function HomePage({ cart, onAddToCart, onRemove, onQtyChange, onC
   // El arreglo vacío [] como dependencia significa que solo se calcula una vez al montar el componente.
   const genres = useMemo(() => {
     return Array.from(new Set(concerts.map((c) => c.genre).sort()))
-  }, []);
+  }, [concerts]);
 
   // Igual que arriba, pero para las ciudades únicas
   const cities = useMemo(() => {
     return Array.from(new Set(concerts.map((c) => c.city).sort()))
-  }, []);
+  }, [concerts]);
 
   // useMemo filtra los conciertos cada vez que cambia alguno de los filtros.
   // Se recalcula automáticamente cuando cambian las dependencias del arreglo [searchTerm, selectedCity, ...].
@@ -90,7 +87,7 @@ export default function HomePage({ cart, onAddToCart, onRemove, onQtyChange, onC
     });
     return results;
     // se ejecuta cada vez que cambia el estado de los filtros
-  }, [searchTerm, selectedCity, selectedGenre, onlyAvailable]);
+  }, [concerts, searchTerm, selectedCity, selectedGenre, onlyAvailable]);
 
   // Función para reiniciar todos los filtros a sus valores por defecto
   function handleReset() {
@@ -101,8 +98,7 @@ export default function HomePage({ cart, onAddToCart, onRemove, onQtyChange, onC
   }
 
   // ====== Vista principal con estados ======
-  const showError = forceError;
-  const showEmpty = !loading && !showError && filteredConcerts.length === 0;
+  const showEmpty = !loading && !error && filteredConcerts.length === 0;
 
   return (
     <main className='mx-auto max-w-6xl px-6 py-6'>
@@ -110,12 +106,12 @@ export default function HomePage({ cart, onAddToCart, onRemove, onQtyChange, onC
         <h1 className="m-0 text-2xl font-semibold">Upcoming Concerts...</h1>
 
         {/* Solo para demo docente (puedes quitarlo luego) */}
-        <div className="mt-2 flex items-center gap-2">
+        {/* <div className="mt-2 flex items-center gap-2">
           <Button variant="secondary" onClick={() => setForceError((v) => !v)}>
             <FiAlertOctagon />
             Toggle error (demo)
           </Button>
-        </div>
+        </div> */}
       </div>
 
       {/* Barra de filtros: recibe los estados y las funciones para actualizarlos (props) */}
