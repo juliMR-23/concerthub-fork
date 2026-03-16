@@ -10,6 +10,8 @@ import HomePage from './pages/homePage'
 import CartPage from './pages/cartPage'
 import NotFoundPage from './pages/notFoundPage'
 import ConcertDetails from './pages/concertDetails'
+import LoginPage from './pages/loginPage'
+import SignUpPage from './pages/signUpPage'
 
 function App() {
 
@@ -82,6 +84,8 @@ function App() {
             cart={cart}
           />}></Route>
         <Route path="*" element={<NotFoundPage />}></Route>
+        <Route path='/login' element={<LoginPage/>}></Route>
+        <Route path='/signup' element={<SignUpPage/>}></Route>
       </Routes>
     </div>
   );
