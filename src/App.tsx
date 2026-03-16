@@ -5,7 +5,7 @@ import { useState } from 'react'
 import Navbar from './components/layout/Navbar'
 import type { CartItem, Concert } from './types'
 import { ConcertStatusEnum } from './types'
-import { Route, Routes, HashRouter } from 'react-router-dom'
+import { Route, Routes } from 'react-router-dom'
 import HomePage from './pages/homePage'
 import CartPage from './pages/cartPage'
 import NotFoundPage from './pages/notFoundPage'
@@ -67,7 +67,6 @@ function App() {
     <div className='min-h-screen bg-page'>
       {/* Barra de navegación superior */}
       <Navbar />
-      <HashRouter>
         <Routes>
           <Route
             path="/"
@@ -95,7 +94,6 @@ function App() {
           <Route path='/login' element={<LoginPage />}></Route>
           <Route path='/signup' element={<SignUpPage />}></Route>
         </Routes>
-      </HashRouter>
     </div>
   );
 }
