@@ -6,7 +6,7 @@ import App from './App.tsx'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <HashRouter basename='/concerthub-fork' >
+    <HashRouter >
       <App />
     </HashRouter>
   </StrictMode>,
