@@ -12,6 +12,7 @@ import NotFoundPage from './pages/notFoundPage'
 import ConcertDetails from './pages/concertDetails'
 import LoginPage from './pages/loginPage'
 import SignUpPage from './pages/signUpPage'
+import Modal from './components/ui/Modal'
 
 function App() {
 
@@ -20,6 +21,10 @@ function App() {
 
   function addToCart(concert: Concert) {
     if (concert.status === ConcertStatusEnum.sold_out) return;
+    const isNewConcert = !cart.some((item) => item.concert.id === concert.id);
+    if (isNewConcert) {
+      Modal.show("Concert added to cart", "The concert has been added to your cart");
+    }
 
     setCart((prev) => {
       // .find() es un metodo que se usa para buscar un elemento en un array
@@ -83,6 +88,8 @@ function App() {
             onRemoveFromCart={removeFromCart}
             cart={cart}
           />}></Route>
+        <Route path="/login" element={<LoginPage />}></Route>
+        <Route path="/signup" element={<SignUpPage />}></Route>
         <Route path="*" element={<NotFoundPage />}></Route>
         <Route path='/login' element={<LoginPage/>}></Route>
         <Route path='/signup' element={<SignUpPage/>}></Route>

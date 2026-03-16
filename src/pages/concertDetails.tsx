@@ -14,10 +14,11 @@ type Props = {
 export default function ConcertDetails({ onAddToCart }: Props) {
   const { id } = useParams();
   const concertId = Number(id);
-  //const concert = concerts.find((c) => c.id === concertId);
+
   const [concert, setConcert] = useState<Concert | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  // const concert = concerts.find((c) => c.id === concertId);
   console.log("this is the concerts page", concerts)
   if (!concert) {
     return (
@@ -32,33 +33,36 @@ export default function ConcertDetails({ onAddToCart }: Props) {
       </main>
     );
   }
+
   async function loadConcert() {
     try {
       setLoading(true);
       setError(null);
-      const data = await getConcertById(concertId)
+      const data = await getConcertById(concertId);
       setConcert(data);
     } catch (e) {
-      const message = e instanceof Error ? e.message : "Uknown Error";
+      const message = e instanceof Error ? e.message : "Unknown Error";
       setError(message);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
   }
+
   useEffect(() => {
     if (!Number.isFinite(concertId)) {
-      setError("ID NOT FOUND");
+      setError("ID NOT FOUNDED");
       setLoading(false);
       return;
     }
     void loadConcert();
   }, [concertId])
+
+  console.log("this is the concert details page", concert)
   const isSold = concert.status === ConcertStatusEnum.sold_out;
   if (loading) {
     return (
       <main className="mx-auto max-w-3xl px-6 py-6">
-        <StateMessage type="loading" title="Loading Content..." description="Fetching details from API..."></StateMessage>
-
+        <StateMessage type="loading" title="Loading Concert..." description="Fetching details from Api..."></StateMessage>
       </main>
     )
   }
@@ -69,7 +73,8 @@ export default function ConcertDetails({ onAddToCart }: Props) {
         Back to concerts
       </Link>
       {error ?
-        <StateMessage type="error" title="Concert not availiable" description={error ?? "Error"}></StateMessage> :
+        <StateMessage type="error" title="Concert not available" description={error ?? "Error"}></StateMessage>
+        :
         <section className="mt-4 rounded-card border border-border bg-surface p-6 shadow-card">
           <div className="flex items-start justify-between gap-4">
             <div>

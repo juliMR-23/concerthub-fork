@@ -6,8 +6,8 @@ export type ConcertStatus = "AVAILABLE" | "SOLD_OUT";
 export enum ConcertStatusEnum {
     available = "AVAILABLE",
     sold_out = "SOLD_OUT"
-  }
-  
+}
+
 // Interfaz que define la estructura de un objeto Concierto.
 // Cada propiedad representa un dato del concierto que se mostrará en la app.
 export interface Concert {
@@ -21,7 +21,15 @@ export interface Concert {
     status: ConcertStatus;
 }
 
-export interface CartItem{
-    concert:Concert;
+export interface CartItem {
+    concert: Concert;
     qty: number;
+}
+
+export interface User {
+    id: number,
+    name: string,
+    last_name: string,
+    email: string,
+    password: string,
 }
