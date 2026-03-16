@@ -5,8 +5,6 @@ import FilterBar from '../components/concerts/FilterBar'
 import type { CartItem, Concert } from '../types'
 import CartPanel from '../components/cart/CartPanel'
 import StateMessage from '../components/ui/StateMessage'
-import Button from '../components/ui/Button'
-import { FiAlertOctagon } from 'react-icons/fi'
 import { getConcerts } from '../services/concertService'
 
 type Props = {
