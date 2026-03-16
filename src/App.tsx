@@ -5,7 +5,7 @@ import { useState } from 'react'
 import Navbar from './components/layout/Navbar'
 import type { CartItem, Concert } from './types'
 import { ConcertStatusEnum } from './types'
-import { Route, Routes } from 'react-router-dom'
+import { Route, Routes, HashRouter } from 'react-router-dom'
 import HomePage from './pages/homePage'
 import CartPage from './pages/cartPage'
 import NotFoundPage from './pages/notFoundPage'
@@ -67,33 +67,35 @@ function App() {
     <div className='min-h-screen bg-page'>
       {/* Barra de navegación superior */}
       <Navbar />
-      <Routes>
-        <Route
-          path="/"
-          element={
-            <HomePage
-              cart={cart}
-              onAddToCart={addToCart}
-              onQtyChange={updateQty}
+      <HashRouter>
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <HomePage
+                cart={cart}
+                onAddToCart={addToCart}
+                onQtyChange={updateQty}
+                onClearCart={clearCart}
+                onRemove={removeFromCart}
+              />
+            }
+          ></Route>
+          <Route path="/concerts/:id" element={<ConcertDetails onAddToCart={addToCart} />}></Route>
+          <Route path="/cart" element={
+            <CartPage
               onClearCart={clearCart}
-              onRemove={removeFromCart}
-            />
-          }
-        ></Route>
-        <Route path="/concerts/:id" element={<ConcertDetails onAddToCart={addToCart} />}></Route>
-        <Route path="/cart" element={
-          <CartPage
-            onClearCart={clearCart}
-            onQtyChange={updateQty}
-            onRemoveFromCart={removeFromCart}
-            cart={cart}
-          />}></Route>
-        <Route path="/login" element={<LoginPage />}></Route>
-        <Route path="/signup" element={<SignUpPage />}></Route>
-        <Route path="*" element={<NotFoundPage />}></Route>
-        <Route path='/login' element={<LoginPage/>}></Route>
-        <Route path='/signup' element={<SignUpPage/>}></Route>
-      </Routes>
+              onQtyChange={updateQty}
+              onRemoveFromCart={removeFromCart}
+              cart={cart}
+            />}></Route>
+          <Route path="/login" element={<LoginPage />}></Route>
+          <Route path="/signup" element={<SignUpPage />}></Route>
+          <Route path="*" element={<NotFoundPage />}></Route>
+          <Route path='/login' element={<LoginPage />}></Route>
+          <Route path='/signup' element={<SignUpPage />}></Route>
+        </Routes>
+      </HashRouter>
     </div>
   );
 }
